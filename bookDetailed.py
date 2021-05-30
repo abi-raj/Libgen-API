@@ -15,14 +15,20 @@ class BookDetailed:
         description = obj.select("p+ div")
         resultDict = {}
         # if website is overloaded it returns a empty list
-        if len(description) == 0 and len(downloadLink)==0:
+        if len(description) == 0 and len(downloadLink) == 0:
             resultDict['result'] = "Server Overload"
             resultDict['description'] = "No description"
             resultDict['download'] = "{}".format(self.bookUrl)
+            resultDict['status'] = "500"
         else:
+            book = {}
             for desc in description:
-                resultDict['description'] = desc.text.split("Description:")[1]
+                book['description'] = desc.text.split("Description:")[1]
             for link in downloadLink:
-                resultDict['download'] = link['href']
+                book['download'] = link['href']
+
+            resultDict['bookData'] = book
             resultDict['result'] = "success"
+            resultDict['status'] = "200"
+
         return resultDict
