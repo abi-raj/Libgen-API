@@ -1,0 +1,16 @@
+beautifulsoup4==4.9.3
+bs4==0.0.1
+certifi==2021.5.30
+chardet==4.0.0
+click==8.0.1
+colorama==0.4.4
+Flask==2.0.1
+gunicorn==20.1.0
+idna==2.10
+itsdangerous==2.0.1
+Jinja2==3.0.1
+MarkupSafe==2.0.1
+requests==2.25.1
+soupsieve==2.2.1
+urllib3==1.26.5
+Werkzeug==2.0.1
