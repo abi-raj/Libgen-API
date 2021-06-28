@@ -20,18 +20,7 @@ def home():
     return "<h1>home</h1>"
 
 
-@app.route('/api/book')  # query parameter - id
-def bookDetails():
-    id = request.args.get("id")
-    if id is None:
-        resultDict = {}
-        resultDict['result'] = 'Invalid id'
-        resultDict['description'] = 'none'
-        resultDict['download'] = 'none'
-        return jsonify(resultDict)
-    else:
-        book = BookDetailed(str(id)).parse()
-        return jsonify(book)
+
 
 
 @app.route('/api/default')
@@ -99,6 +88,18 @@ def isbnSearch():
         resultDict['result'] = "Enter a Valid ISBN number"
         return resultDict
 
+@app.route('/api/book')  # query parameter - id
+def bookDetails():
+    id = request.args.get("id")
+    if id is None:
+        resultDict = {}
+        resultDict['result'] = 'Invalid id'
+        resultDict['description'] = 'none'
+        resultDict['download'] = 'none'
+        return jsonify(resultDict)
+    else:
+        book = BookDetailed(str(id)).parse()
+        return jsonify(book)
 
 if __name__ == "__main__":
     app.run(debug=True)

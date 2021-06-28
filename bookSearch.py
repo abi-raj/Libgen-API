@@ -27,6 +27,7 @@ class BookSearch:
     def parse(self):
         response = req.get(self.searchUrl).content
         obj = Bs(response, 'html.parser', from_encoding="utf-8")
+        #print(obj)
         return self.extract(obj)
 
     def extract(self, obj):

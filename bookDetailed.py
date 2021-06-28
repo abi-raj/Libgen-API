@@ -10,7 +10,9 @@ class BookDetailed:
 
     def parse(self):
         response = req.get(self.bookUrl).content
+
         obj = Bs(response, 'html.parser')
+
         downloadLink = obj.select("h2 a")
         description = obj.select("p+ div")
         resultDict = {}
