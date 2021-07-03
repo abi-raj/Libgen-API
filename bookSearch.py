@@ -41,12 +41,11 @@ class BookSearch:
         allPreLink = obj.select("tbody tr:nth-child(2) td:nth-child(1) a")
         allPagination = obj.select("#paginator_example_top~ table tr:nth-child(1) td:nth-child(1) font")
         totalFileCount, totalPageCount = self.splitTotal(allPagination)
+
         allPagesCount = obj.select("tr:nth-child(7) td:nth-child(4)")
         allSize = obj.select("tr:nth-child(10) td:nth-child(2)")
         allPublisher = obj.select("tr:nth-child(5) td:nth-child(2)")
-        # result as a Dictionary
-        resultDict = {"status": "200", "result": "success", "totalFiles": totalFileCount, "totalPages": totalPageCount,
-                      "limit": LIMIT}
+       
         # iterating each value and appending them into lists after conversion
         titles = [t.text for t in allTitle]
         authors = [auth.text for auth in allAuthor]
@@ -58,8 +57,12 @@ class BookSearch:
         pagesCount = [pc.text for pc in allPagesCount]
         sizes = [self.sizeSplit(siz) for siz in allSize]
         publishers = [pub.text for pub in allPublisher]
+        totalFileCount = len(titles) if totalFileCount<=25 else totalFileCount
         # JSON array containing all the resultant books
         allBooks = []
+         # result as a Dictionary
+        resultDict = {"status": 200, "result": "success", "totalFiles": totalFileCount, "totalPages": totalPageCount,
+                      "limit": LIMIT}
         for i in range(len(titles)):
             # creating a book json object
             book = {"title": titles[i], "author": authors[i], "year": years[i], "language": langs[i], "type": types[i],
@@ -95,5 +98,5 @@ class BookSearch:
 
 def defaultBookResult():
     # if the api request is invalid , returning the below object. dict['result'] is based on the uses
-    resultDict = {'books': [], 'totalPages': 0, 'totalFiles': 0, 'limit': str(LIMIT), "status": "400"}
+    resultDict = {'books': [], 'totalPages': 0, 'totalFiles': 0, 'limit': str(LIMIT), "status": 400}
     return resultDict
