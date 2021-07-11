@@ -18,10 +18,12 @@ class BookDetailed:
         resultDict = {}
         # if website is overloaded it returns a empty list
         if len(description) == 0 and len(downloadLink) == 0:
+            book={}
             resultDict['result'] = "Server Overload"
-            resultDict['description'] = "No description"
-            resultDict['download'] = "{}".format(self.bookUrl)
+            book['description'] = "Server Error.But you can download the book from the website by clicking below."
+            book['download'] = "{}".format(self.bookUrl)
             resultDict['status'] = "500"
+            resultDict['bookData']=book #added on 11th july
         else:
             book = {}
             for desc in description:
