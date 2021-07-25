@@ -1,7 +1,7 @@
 import requests as req
 from bs4 import BeautifulSoup as Bs
 
-
+#detailed book object
 class BookDetailed:
     baseUrl = "http://libgen.rs/get?&md5="
 
