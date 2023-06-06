@@ -1,11 +1,12 @@
 import requests as req
 from bs4 import BeautifulSoup as Bs
+from models.bookSearchModels import BookSearchModel, SearchResult
 
 LIMIT = 25  # maximum number of results per page. values can be either 25,50,100 only
 
 
 class BookSearch:
-    # list of default values , if not parameters value are not provided
+    # Default query parameter vaules
     baseUrl = "http://libgen.rs/search.php"
     query = 'abc'
     column = 'def'
@@ -14,20 +15,29 @@ class BookSearch:
     page = '1'
 
     def __init__(self, query, column, sort, sortOrder, page):
-        # print(column)
-        self.query = self.query if query is None else (query if " " not in query else query.replace(" ", "+"))
+
+        """
+        Applies the given query parameter vaules in the URL. If not provided, default ones are used.
+        """
+        
+        self.query = self.query if query is None else (query if " " not in query else query.replace(" ", "+")) # book named 'Hello World' will be 'Hello+World'
         self.column = self.column if column is None else column
         self.sort = self.sort if sort is None else sort
         self.orderBy = self.orderBy if sortOrder is None else sortOrder
         self.page = self.page if page is None else page
         self.searchUrl = self.baseUrl + "?&req=" + self.query + "&res=" + str(
             LIMIT) + "&phrase=1&view=detailed" + "&column=" + self.column + "&sort=" + self.sort + "&page=" + self.page + "&sortmode=" + self.orderBy
-        # print(self.searchUrl)
+        
 
-    def parse(self):
+    def parse(self): 
+
+        """
+        Request the page from web and convert it into a BeautifulSoup object.
+        extract() function is then called to extract the required fields from the object.
+        """
+
         response = req.get(self.searchUrl).content
         obj = Bs(response, 'html.parser', from_encoding="utf-8")
-        #print(obj)
         return self.extract(obj)
 
     def extract(self, obj):
@@ -58,40 +68,38 @@ class BookSearch:
         sizes = [self.sizeSplit(siz) for siz in allSize]
         publishers = [pub.text for pub in allPublisher]
         totalFileCount = len(titles) if totalFileCount<=25 else totalFileCount
-        # JSON array containing all the resultant books
+
+        # array containing all the resultant book objects
         allBooks = []
-         # result as a Dictionary
-        resultDict = {"status": 200, "result": "success", "totalFiles": totalFileCount, "totalPages": totalPageCount,
-                      "limit": LIMIT}
+        
         for i in range(len(titles)):
-            # creating a book json object
-            book = {"title": titles[i], "author": authors[i], "year": years[i], "language": langs[i], "type": types[i],
-                    "image": images[i], "id": prelinks[i], "pages": pagesCount[i], "size": sizes[i],
-                    "publisher": publishers[i]}
-            # appending them into the JSON Array
-            allBooks.append(book)
-        resultDict["books"] = allBooks
-        return resultDict
+            # creating a book object
+            book = BookSearchModel (title=titles[i], author=authors[i], year=years[i], lang = langs[i], f_type=types[i], image=images[i],
+                               b_id = prelinks[i], pages = pagesCount[i], size=sizes[i], pub = publishers[i])
+            allBooks.append(vars(book))
+
+        result = SearchResult(books = allBooks, totalPages = totalPageCount, totalFiles = totalFileCount, limit = LIMIT, status = 200)
+        return vars(result)
 
     def splitTotal(self, given):
-        # print(given)
+        
         if len(given) == 0:
             return 0, 0
         else:
-            for string in given:
-                return self.totalCompute(int(string.text.split(' ')[0]))
+            for string in given: # takin only the first tag
+                return self.totalCompute(int(string.text.split(' ')[0])) # Example string.text = "89 files found"
 
     def totalCompute(self, total):
-        totMax = LIMIT if total // LIMIT >= LIMIT else total // LIMIT
-        if not total % LIMIT == 0:
-            print(totMax)
-            return total, totMax + 1
+        """ Compute total number of pages that can be present """
+        totMax = LIMIT if total // LIMIT >= LIMIT else total // LIMIT # the max number of pages for pagination is set to 25. if calculated value is lesser, that is taken.
+        if not total % LIMIT == 0: 
+            return total, totMax + 1 # 51 books % 25 per page =  2+1 pages 
         else:
-            return total, totMax
+            return total, totMax # 50 % 25 = 2
 
     def sizeSplit(self, string):
-        # just normal string operation
-        arr = string.text.split(' ')
+
+        arr = string.text.split(' ') # Example string = 3 Mb (2840045)
         result = arr[0] + " " + arr[1]
         return result
 
