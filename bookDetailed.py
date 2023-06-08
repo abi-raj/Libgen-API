@@ -25,8 +25,7 @@ class BookDetailed:
             
             for desc in description:
                 desc = desc.text.split("Description:")[1]
-            for link in downloadLink:
-                d_link = link['href']
+            d_link = downloadLink[0]['href']
             book = BookDetailedModel(description = desc, link = d_link)
             bookResult = BookDetailedResult(book = book)
 
